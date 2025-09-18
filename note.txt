@@ -1,0 +1,17 @@
+PARSING:
+
+LIBFT:
+
+TEST:
+- negative value
+- overflow
+- value to high 
+
+mutex();
+dying();
+print();
+
+lock();
+eating();
+print();
+unlock();
