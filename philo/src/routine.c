@@ -36,22 +36,14 @@ int	dying(t_philo *philo)
 {
 	if (philo->t_last_eat - philo->data->t_start > philo->data->t_die)
 	{
-		pthread_mutex_lock(&philo->mtx->death);
+		w_pthread_mutex_lock(&philo->mtx->death, philo->data);
 		philo->data->philo_died = true;
 		lock_and_print(philo->id, "died", philo->data);
-		pthread_mutex_unlock(&philo->mtx->death);
+		w_pthread_mutex_unlock(&philo->mtx->death, philo->data);
 		return (1);
 	}
 	return (0);
 }
-
-// int	check_death(t_data *data)
-// {
-// 	while (1)
-// 	{
-
-// 	}
-// }
 
 void	thinking(t_philo *philo)
 {
@@ -68,15 +60,15 @@ void	sleeping(t_philo *philo)
 
 void	eating(t_philo *philo)
 {
-	pthread_mutex_lock(philo->l_fork);
+	w_pthread_mutex_lock(philo->l_fork, philo->data);
 	lock_and_print(philo->id, "as taken a fork", philo->data);
-	pthread_mutex_lock(philo->r_fork);
+	w_pthread_mutex_lock(philo->r_fork, philo->data);
 	lock_and_print(philo->id, "as taken a fork", philo->data);
 	lock_and_print(philo->id, "is eating", philo->data);
 	philo->t_last_eat = get_time_ms();
 	ft_usleep(philo->data->t_eat * 1000, philo);
-	pthread_mutex_unlock(philo->l_fork);
-	pthread_mutex_unlock(philo->r_fork);
+	w_pthread_mutex_unlock(philo->l_fork, philo->data);
+	w_pthread_mutex_unlock(philo->r_fork, philo->data);
 }
 
 void	*routine(void *args)
@@ -124,7 +116,7 @@ int	launch_routine(t_data *data)
 	data->t_start = get_time_ms();
 	while (i < data->nb_philo)
 	{
-			pthread_create(&data->philo[i].thread, NULL, routine, &data->philo[i]);
+			w_pthread_create(&data->philo[i].thread, &data->philo[i], data);
 			i++;
 	}
 	// check_death();

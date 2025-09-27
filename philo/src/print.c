@@ -21,6 +21,15 @@ void	lock_and_print(int id, char *mess, t_data *data) // TODO: refacto with p_th
 	pthread_mutex_unlock(&data->mtx.print);
 }
 
+void	lock_and_print_err(char *ft_name, pthread_mutex_t *mtx_print)
+{
+	pthread_mutex_lock(mtx_print);
+	write(2, "Error: ", 7);
+	write(2, ft_name, ft_strlen(ft_name));
+	write(2, " failed !\n ", 10);
+	pthread_mutex_lock(mtx_print);
+}
+
 void	print_time_interval(useconds_t start, useconds_t end)
 {
 	printf("time_interval = %u ms", (end - start) * 1000);
@@ -51,7 +60,7 @@ void	print_data(t_data *data)
 	printf("|	DATA		|\n");
 	printf("+-----------------------+\n");
 	printf("nb_philo   \t= %d\n", data->nb_philo);
-	printf("time_start\t= %lldd\n", data->t_start);
+	printf("time_start\t= %lld\n", data->t_start);
 	printf("time_to_sleep\t= %d\n", data->t_sleep);
 	printf("time_to_eat   \t= %d\n", data->t_eat);
 	printf("time_to_sleep\t= %d\n", data->t_sleep);

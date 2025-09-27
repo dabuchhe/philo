@@ -107,12 +107,17 @@ int	                launch_routine(t_data *data);
 long long	get_time_ms(void);
 void	lock_and_print(int id, char *mess, t_data *data);
 void    ft_usleep(long usec, t_philo *philo);
+void	lock_and_print_err(char *ft_name, pthread_mutex_t *mtx_print);
+
+//  utils.c
+int ft_strlen(char *str);
+
 //  wrapper.c
-// int              w_pthread_create();
-// int                 w_pthread_detach();
-// int                 w_pthread_join();
-// int                 w_pthread_mutex_init();
-// int                 w_pthread_mutex_destroy();
-// int                 w_pthread_mutex_lock();
-// int                 w_pthread_mutex_unlock();
+int	w_pthread_mutex_unlock(pthread_mutex_t *mutex, t_data *data);
+int	w_pthread_mutex_lock(pthread_mutex_t *mutex, t_data *data);
+int	w_pthread_mutex_init(pthread_mutex_t *mutex, t_data *data);
+int	w_pthread_mutex_destroy(pthread_mutex_t *mutex, t_data *data);
+int	w_pthread_create(pthread_t *thread, t_philo *philo, t_data *data);
+int	w_pthread_join(pthread_t *thread, t_data *data);
+
 #endif
