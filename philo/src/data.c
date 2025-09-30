@@ -42,7 +42,9 @@ static int	init_philo(t_data *data)
 	i = 0;
 	while (i < data->nb_philo)
 	{
-		data->philo[i].id = i; // rajouter + 1 lors du print;
+		data->philo[i].id = i;
+		data->philo[i].nb_meal = 0;
+		data->philo[i].finish = false;
 		data->philo[i].data = data;
 		data->philo[i].mtx = &data->mtx;
 		data->philo[i].l_fork = &data->mtx.fork[i];
@@ -54,12 +56,14 @@ static int	init_philo(t_data *data)
 
 static int	init_data(char **av, t_data *data)
 {
-	data->nb_philo = atoi_secure(av[1]); // if nb_philo < 1 = error
+	data->nb_philo = atoi_secure(av[1]);
 	data->t_die = atoi_secure(av[2]);
 	data->t_eat = atoi_secure(av[3]);
 	data->t_sleep = atoi_secure(av[4]);
 	if (av[5])
-		data->nb_eat = atoi_secure(av[5]);
+		data->must_eat = atoi_secure(av[5]);
+	else
+		data->must_eat = -1;
 	data->philo_died = false;
 	return (0);
 }

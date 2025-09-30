@@ -27,12 +27,7 @@ void	lock_and_print_err(char *ft_name, pthread_mutex_t *mtx_print)
 	write(2, "Error: ", 7);
 	write(2, ft_name, ft_strlen(ft_name));
 	write(2, " failed !\n ", 10);
-	pthread_mutex_lock(mtx_print);
-}
-
-void	print_time_interval(useconds_t start, useconds_t end)
-{
-	printf("time_interval = %u ms", (end - start) * 1000);
+	pthread_mutex_unlock(mtx_print);
 }
 
 void	print_philo(t_data *data)
@@ -61,7 +56,7 @@ void	print_data(t_data *data)
 	printf("+-----------------------+\n");
 	printf("nb_philo   \t= %d\n", data->nb_philo);
 	printf("time_start\t= %lld\n", data->t_start);
-	printf("time_to_sleep\t= %d\n", data->t_sleep);
+	printf("time_to_die\t= %d\n", data->t_die);
 	printf("time_to_eat   \t= %d\n", data->t_eat);
 	printf("time_to_sleep\t= %d\n", data->t_sleep);
 	printf("must_eat\t= %d\n", data->t_sleep);

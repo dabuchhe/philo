@@ -38,6 +38,25 @@ void	join_threads(t_data *data)
 	}
 }
 
+void	free_philo(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->nb_philo)
+	{
+		// free(&data->philo[i]);
+		i++;
+	}
+}
+
+void	clean_exit(t_data *data)
+{
+	join_threads(data);
+	destroy_mutex(data);
+	free_philo(data);
+}
+
 int	main(int ac, char **av)
 {
 	t_data	data;
@@ -49,7 +68,7 @@ int	main(int ac, char **av)
 	join_threads(&data);
 	print_all(&data);
 	destroy_mutex(&data);
-	// free_all(&data);
+	free_philo(&data);
 	return (NO_ERROR);
 }
 
