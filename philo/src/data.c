@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   data.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: dabuchhe <dabuchhe@student.42lyon.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+
+	+:+     */
+/*   By: dabuchhe <dabuchhe@student.42lyon.fr>      +#+  +:+
+	+#+        */
+/*                                                +#+#+#+#+#+
+	+#+           */
 /*   Created: 2025/09/06 20:05:50 by dabuchhe          #+#    #+#             */
 /*   Updated: 2025/09/06 20:05:50 by dabuchhe         ###   ########lyon.fr   */
 /*                                                                            */
@@ -26,7 +29,7 @@ static int	init_mutex(t_data *data)
 	i = 0;
 	while (i < data->nb_philo)
 	{
-		pthread_mutex_init(&data->mtx.fork[i], NULL);		
+		pthread_mutex_init(&data->mtx.fork[i], NULL);
 		i++;
 	}
 	return (0);

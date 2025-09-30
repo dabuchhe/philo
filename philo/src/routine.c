@@ -16,65 +16,70 @@
 #include "philo.h"
 
 
-// void	*routine(void *args)
-// {
-// 	t_philo *philo;
-
-// 	philo = (t_philo *)args;
-// 	pthread_mutex_lock(philo->l_fork);
-// 	mutex_and_print();
-// 	pthread_mutex_lock(philo->r_fork);
-// 	mutex_and_print();
-// 	check_eat_nb ()?;
-// 	update_time();
-// 	update_eat_nb();
-// 	sleep();
-
-// 	pthread_mutex_unlock(philo->l_fork);
-// 	pthread_mutex_unlock(philo->r_fork);
-// 	pthread_mutex_unlock(&philo->mtx->print);
-// 	return (NULL);
-// }
-
-void	thinking(t_philo *philo)
-{
-	lock_and_print(philo->id, "is thinking", philo->data);
-	usleep(50);
-}
-
-void	sleeping(t_philo *philo)
-{
-	lock_and_print(philo->id, "is sleeping", philo->data);
-	ft_usleep(philo->data->t_sleep * 1000, philo);
-}
-
 void	eating(t_philo *philo)
 {
-	w_pthread_mutex_lock(philo->l_fork, philo->data);
-	lock_and_print(philo->id, "has taken a fork", philo->data);
-	w_pthread_mutex_lock(philo->r_fork, philo->data);
-	lock_and_print(philo->id, "has taken a fork", philo->data);
+	if (philo->data->nb_philo == 1)
+	{
+		pthread_mutex_lock(philo->l_fork);
+		lock_and_print(philo->id, "has taken a fork", philo->data);
+		ft_usleep(philo->data->t_die * 1000);
+		pthread_mutex_unlock(philo->l_fork);
+		return ;
+	}
+	if (philo->id % 2 == 0)
+	{
+		pthread_mutex_lock(philo->r_fork);
+		lock_and_print(philo->id, "has taken a fork", philo->data);
+		pthread_mutex_lock(philo->l_fork);
+		lock_and_print(philo->id, "has taken a fork", philo->data);
+	}
+	else
+	{
+		pthread_mutex_lock(philo->l_fork);
+		lock_and_print(philo->id, "has taken a fork", philo->data);
+		pthread_mutex_lock(philo->r_fork);
+		lock_and_print(philo->id, "has taken a fork", philo->data);
+	}
 	lock_and_print(philo->id, "is eating", philo->data);
+	pthread_mutex_lock(&philo->mtx->eat);
 	philo->nb_meal++;
 	philo->t_last_eat = get_time_ms();
 	if (philo->nb_meal >= philo->data->must_eat && philo->data->must_eat != -1)
-	{
-		pthread_mutex_lock(&philo->mtx->death);
 		philo->finish = true;
-		pthread_mutex_unlock(&philo->mtx->death);
-	}
-	ft_usleep(philo->data->t_eat * 1000, philo);
-	w_pthread_mutex_unlock(philo->l_fork, philo->data);
-	w_pthread_mutex_unlock(philo->r_fork, philo->data);
+	pthread_mutex_unlock(&philo->mtx->eat);
+	ft_usleep(philo->data->t_eat * 1000);
+	pthread_mutex_unlock(philo->l_fork);
+	pthread_mutex_unlock(philo->r_fork);
 }
+
+// void	eating(t_philo *philo)
+// {
+// 	pthread_mutex_lock(philo->l_fork);
+// 	lock_and_print(philo->id, "has taken a fork", philo->data);
+// 	pthread_mutex_lock(philo->r_fork);
+// 	lock_and_print(philo->id, "has taken a fork", philo->data);
+// 	lock_and_print(philo->id, "is eating", philo->data);
+// 	philo->nb_meal++;
+// 	philo->t_last_eat = get_time_ms();
+// 	if (philo->nb_meal >= philo->data->must_eat && philo->data->must_eat != -1)
+// 	{
+// 		pthread_mutex_lock(&philo->mtx->death);
+// 		philo->finish = true;
+// 		pthread_mutex_unlock(&philo->mtx->death);
+// 	}
+// 	ft_usleep(philo->data->t_eat * 1000);
+// 	pthread_mutex_unlock(philo->l_fork);
+// 	pthread_mutex_unlock(philo->r_fork);
+// }
 
 void	*routine(void *args)
 {
-	t_philo *philo = (t_philo *)args;
+	t_philo *philo;
 
+	philo = (t_philo *)args;
 	if (philo->id % 2 == 0)
 	{
-		thinking(philo);
+		lock_and_print(philo->id, "is thinking", philo->data);
 		usleep(50);
 	}
 	while (1)
@@ -85,11 +90,11 @@ void	*routine(void *args)
 		usleep(50);
 		if (check_death(philo))
 			return (NULL);
-		sleeping(philo);
-		usleep(50);
+		lock_and_print(philo->id, "is sleeping", philo->data);
+		ft_usleep(philo->data->t_sleep * 1000);
 		if (check_death(philo))
 			return (NULL);
-		thinking(philo);
+		lock_and_print(philo->id, "is thinking", philo->data);
 		usleep(50);
 	}
 	return (NULL);
@@ -97,9 +102,10 @@ void	*routine(void *args)
 
 void	*monitoring(void *arg)
 {
-	t_data *data = arg;
+	t_data *data;
 	int i;
 
+	data = arg;
 	while (1)
 	{
 		i = 0;
@@ -123,7 +129,8 @@ int	launch_routine(t_data *data)
 	while (i < data->nb_philo)
 	{
 		data->philo[i].t_last_eat = data->t_start;
-		w_pthread_create(&data->philo[i].thread, &data->philo[i], data);
+		w_pthread_create(&data->philo[i].thread, routine, &data->philo[i],
+			data);
 		i++;
 	}
 	pthread_create(&monitor, NULL, monitoring, data);

@@ -2,16 +2,19 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   arg_is_valid.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: dabuchhe <dabuchhe@student.42lyon.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+
+	+:+     */
+/*   By: dabuchhe <dabuchhe@student.42lyon.fr>      +#+  +:+
+	+#+        */
+/*                                                +#+#+#+#+#+
+	+#+           */
 /*   Created: 2025/09/05 15:19:22 by dabuchhe          #+#    #+#             */
 /*   Updated: 2025/09/05 15:19:22 by dabuchhe         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <philo.h>
 #include <limits.h>
+#include <philo.h>
 
 int	atoi_secure(char *str)
 {
@@ -30,19 +33,19 @@ int	atoi_secure(char *str)
 			neg *= -1;
 		i++;
 	}
-    while (str[i] >= '0' && str[i] <= '9')
-    {
+	while (str[i] >= '0' && str[i] <= '9')
+	{
 		if (res > (INT_MAX - (str[i] - '0')) / 10)
-            return (-1);
-        res = res * 10 + (str[i] - '0');
-        i++;
-    }
+			return (-1);
+		res = res * 10 + (str[i] - '0');
+		i++;
+	}
 	return (res);
 }
 
 static bool	is_numeric(char *av)
 {
-	int	i;
+	int		i;
 	bool	neg;
 
 	neg = 1;
@@ -64,11 +67,10 @@ static bool	is_numeric(char *av)
 	return (true);
 }
 
-
 bool	arg_is_valid(int ac, char **av)
 {
 	int	i;
-	
+
 	if (ac != 5 && ac != 6)
 		return (false);
 	i = 1;
