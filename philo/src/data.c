@@ -60,11 +60,17 @@ static int	init_philo(t_data *data)
 static int	init_data(char **av, t_data *data)
 {
 	data->nb_philo = atoi_secure(av[1]);
+	if (data->nb_philo <= 0)
+		return (1);
 	data->t_die = atoi_secure(av[2]);
 	data->t_eat = atoi_secure(av[3]);
 	data->t_sleep = atoi_secure(av[4]);
 	if (av[5])
+	{
 		data->must_eat = atoi_secure(av[5]);
+		if (data->must_eat <= 0)
+			return (1);
+	}
 	else
 		data->must_eat = -1;
 	data->philo_died = false;
@@ -73,8 +79,11 @@ static int	init_data(char **av, t_data *data)
 
 int	init_all(char **av, t_data *data)
 {
-	init_data(av, data);
-	init_mutex(data);
-	init_philo(data);
+	if (init_data(av, data))
+		return (1);
+	if (init_mutex(data))
+		return (1);
+	if (init_philo(data))
+		return (1);
 	return (0);
 }

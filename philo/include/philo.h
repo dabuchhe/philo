@@ -52,6 +52,7 @@ typedef struct s_mutex
 	pthread_mutex_t	death;
 	pthread_mutex_t	print;
 	pthread_mutex_t eat;
+	pthread_mutex_t start;
 }	t_mutex;
 
 typedef struct s_philo
@@ -130,5 +131,5 @@ int			w_pthread_mutex_destroy(pthread_mutex_t *mutex, t_data *data);
 int			w_pthread_create(pthread_t *thread, void *routine, void *args, t_data *data);
 // int			w_pthread_create(pthread_t *thread, t_philo *philo, t_data *data);
 int			w_pthread_join(pthread_t *thread, t_data *data);
-
+int	check_philo_died(t_philo *philo);
 #endif

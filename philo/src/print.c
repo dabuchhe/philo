@@ -25,8 +25,8 @@ void	lock_and_print(int id, char *mess, t_data *data)
 		printf("%lld ", get_time_ms() - data->t_start);
 		printf("%d ", id + 1);
 		printf("%s\n", mess);
+		pthread_mutex_unlock(&data->mtx.print);
 	}
-	pthread_mutex_unlock(&data->mtx.print);
 	pthread_mutex_unlock(&data->mtx.death);
 }
 

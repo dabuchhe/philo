@@ -42,12 +42,12 @@ void	eating(t_philo *philo)
 	}
 	lock_and_print(philo->id, "is eating", philo->data);
 	pthread_mutex_lock(&philo->mtx->eat);
-	philo->nb_meal++;
 	philo->t_last_eat = get_time_ms();
 	if (philo->nb_meal >= philo->data->must_eat && philo->data->must_eat != -1)
 		philo->finish = true;
-	pthread_mutex_unlock(&philo->mtx->eat);
 	ft_usleep(philo->data->t_eat * 1000);
+	philo->nb_meal++;
+	pthread_mutex_unlock(&philo->mtx->eat);
 	pthread_mutex_unlock(philo->l_fork);
 	pthread_mutex_unlock(philo->r_fork);
 }
@@ -80,21 +80,22 @@ void	*routine(void *args)
 	if (philo->id % 2 == 0)
 	{
 		lock_and_print(philo->id, "is thinking", philo->data);
-		usleep(50);
+		ft_usleep(philo->data->t_eat / 2);
 	}
 	while (1)
 	{
-		if (check_death(philo))
+		if (check_philo_died(philo))
 			return (NULL);
 		eating(philo);
-		usleep(50);
-		if (check_death(philo))
+		if (check_philo_died(philo))
 			return (NULL);
 		lock_and_print(philo->id, "is sleeping", philo->data);
 		ft_usleep(philo->data->t_sleep * 1000);
-		if (check_death(philo))
+		if (check_philo_died(philo))
 			return (NULL);
 		lock_and_print(philo->id, "is thinking", philo->data);
+		if (philo->data->t_die - philo->data->t_eat > philo->data->t_eat + philo->data->t_sleep)
+			usleep(philo->data->t_eat * 1000);
 		usleep(50);
 	}
 	return (NULL);
@@ -125,14 +126,15 @@ int	launch_routine(t_data *data)
 	int i;
 
 	i = 0;
-	data->t_start = get_time_ms();
+	pthread_mutex_lock(&data->mtx.start);
 	while (i < data->nb_philo)
 	{
 		data->philo[i].t_last_eat = data->t_start;
 		w_pthread_create(&data->philo[i].thread, routine, &data->philo[i],
 			data);
-		i++;
+			i++;
 	}
+	data->t_start = get_time_ms();
 	pthread_create(&monitor, NULL, monitoring, data);
 	pthread_join(monitor, NULL);
 	return (0);

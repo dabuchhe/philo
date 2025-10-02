@@ -40,7 +40,7 @@ int	atoi_secure(char *str)
 		res = res * 10 + (str[i] - '0');
 		i++;
 	}
-	return (res);
+	return (res * neg);
 }
 
 static bool	is_numeric(char *av)
