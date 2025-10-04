@@ -70,19 +70,23 @@ static bool	is_numeric(char *av)
 bool	arg_is_valid(int ac, char **av)
 {
 	int	i;
+	int	is_valid;
 
+	is_valid = true;
 	if (ac != 5 && ac != 6)
-		return (false);
+		is_valid = false;
 	i = 1;
 	while (av[i])
 	{
 		if (!av[i])
-			return (false);
+			is_valid = false;
 		if (!is_numeric(av[i]))
-			return (false);
+			is_valid = false;
 		if (atoi_secure(av[i]) < 0)
-			return (false);
+			is_valid = false;
 		i++;
 	}
-	return (true);
+	if (!is_valid)
+		write(2, "Error: Bad arguments\n", 21);
+	return (is_valid);
 }

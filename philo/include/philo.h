@@ -132,4 +132,5 @@ int			w_pthread_create(pthread_t *thread, void *routine, void *args, t_data *dat
 // int			w_pthread_create(pthread_t *thread, t_philo *philo, t_data *data);
 int			w_pthread_join(pthread_t *thread, t_data *data);
 int	check_philo_died(t_philo *philo);
+bool	ft_usleep_sleep(long usec, t_philo *philo);
 #endif

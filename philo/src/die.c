@@ -6,7 +6,7 @@
 /*   By: dabuchhe <dabuchhe@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/29 22:29:02 by dabuchhe          #+#    #+#             */
-/*   Updated: 2025/10/02 20:38:52 by dabuchhe         ###   ########lyon.fr   */
+/*   Updated: 2025/10/03 19:21:51 by dabuchhe         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,15 @@ int	check_must_eat(t_data *data)
 	i = 0;
 	while (i < data->nb_philo)
 	{
-		pthread_mutex_lock(&data->mtx.eat);
 		pthread_mutex_lock(&data->mtx.death);
 		if (data->philo[i].finish == true)
 		{
 			data->end_simu = true;
 			pthread_mutex_unlock(&data->mtx.death);
-			pthread_mutex_unlock(&data->mtx.eat);
 			return (1);
 		}
 		i++;
 		pthread_mutex_unlock(&data->mtx.death);
-		pthread_mutex_unlock(&data->mtx.eat);
 	}
 	return (0);
 }
@@ -51,7 +48,7 @@ int	check_time_to_die(t_philo *philo)
 	int	status;
 
 	status = 0;
-	pthread_mutex_lock(&philo->mtx->eat);
+	// pthread_mutex_lock(&philo->mtx->eat);
 	if (get_time_ms() - philo->t_last_eat > philo->data->t_die)
 	{
 		lock_and_print(philo->id, "died", philo->data);
@@ -61,7 +58,7 @@ int	check_time_to_die(t_philo *philo)
 		pthread_mutex_unlock(&philo->mtx->death);
 		status = 1;
 	}
-	pthread_mutex_unlock(&philo->mtx->eat);
+	// pthread_mutex_unlock(&philo->mtx->eat);
 	return (status);
 }
 

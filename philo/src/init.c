@@ -6,7 +6,7 @@
 /*   By: dabuchhe <dabuchhe@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/30 20:16:07 by dabuchhe          #+#    #+#             */
-/*   Updated: 2025/09/30 23:20:34 by dabuchhe         ###   ########lyon.fr   */
+/*   Updated: 2025/10/03 19:59:17 by dabuchhe         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,13 @@ static int	init_mutex(t_data *data)
 {
 	int	i;
 	
-	if (w_pthread_mutex_init(&data->mtx.eat, data))
+	if (pthread_mutex_init(&data->mtx.eat, NULL))
 		return (1);
-	if (w_pthread_mutex_init(&data->mtx.print, data))
+	if (pthread_mutex_init(&data->mtx.print, NULL))
 		return (1);
-	if (w_pthread_mutex_init(&data->mtx.death, data))
+	if (pthread_mutex_init(&data->mtx.start, NULL))
+		return (1);
+	if (pthread_mutex_init(&data->mtx.death, NULL))
 		return (1);
 	data->mtx.fork = malloc(sizeof(pthread_mutex_t) * data->nb_philo);
 	if (!data->mtx.fork)
@@ -31,7 +33,7 @@ static int	init_mutex(t_data *data)
 	i = 0;
 	while (i < data->nb_philo)
 	{
-		if (w_pthread_mutex_init(&data->mtx.fork[i], data))
+		if (pthread_mutex_init(&data->mtx.fork[i], data))
 			return (1);
 		i++;
 	}
@@ -86,9 +88,13 @@ int	init_all(char **av, t_data *data)
 {
 	if (init_data(av, data))
 		return (1);
-	if (init_mutex(data))
-		return (1);
 	if (init_philo(data))
 		return (1);
+	if (init_mutex(data))
+	{
+		free(data->philo);
+		data->philo = NULL;
+		return (1);
+	}
 	return (0);
 }

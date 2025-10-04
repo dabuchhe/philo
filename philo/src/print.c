@@ -19,14 +19,15 @@
 void	lock_and_print(int id, char *mess, t_data *data)
 {
 	pthread_mutex_lock(&data->mtx.death);
+	pthread_mutex_lock(&data->mtx.print);
 	if (data->end_simu == false)
 	{	
-		pthread_mutex_lock(&data->mtx.print);
+
 		printf("%lld ", get_time_ms() - data->t_start);
 		printf("%d ", id + 1);
 		printf("%s\n", mess);
-		pthread_mutex_unlock(&data->mtx.print);
 	}
+	pthread_mutex_unlock(&data->mtx.print);
 	pthread_mutex_unlock(&data->mtx.death);
 }
 
@@ -38,42 +39,3 @@ void	lock_and_print_err(char *ft_name, pthread_mutex_t *mtx_print)
 	write(2, " failed !\n ", 10);
 	pthread_mutex_unlock(mtx_print);
 }
-
-// void	print_philo(t_data *data)
-// {
-// 	int i;
-
-// 	i = 0;
-
-// 	printf("+-----------------------+\n");
-// 	printf("|	PHILO		|\n");
-// 	printf("+-----------------------+\n");
-// 	while (i < data->nb_philo)
-// 	{
-// 		printf("id \t= %d\n", data->philo[i].id);
-// 		printf("\n\n");
-// 		i++;
-// 	}
-// }
-
-// void	print_data(t_data *data)
-// {
-// 	printf("+-----------------------+\n");
-// 	printf("|	DATA		|\n");
-// 	printf("+-----------------------+\n");
-// 	printf("nb_philo   \t= %d\n", data->nb_philo);
-// 	printf("time_start\t= %lld\n", data->t_start);
-// 	printf("time_to_die\t= %d\n", data->t_die);
-// 	printf("time_to_eat   \t= %d\n", data->t_eat);
-// 	printf("time_to_sleep\t= %d\n", data->t_sleep);
-// 	printf("must_eat\t= %d\n", data->t_sleep);
-// 	printf("\n\n");
-// }
-
-// void	print_all(t_data *data)
-// {
-// 	pthread_mutex_lock(&(data->mtx.print));
-// 	print_data(data);
-// 	print_philo(data);
-// 	pthread_mutex_unlock(&(data->mtx.print));
-// }

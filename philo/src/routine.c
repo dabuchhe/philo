@@ -15,7 +15,6 @@
 
 #include "philo.h"
 
-
 void	eating(t_philo *philo)
 {
 	if (philo->data->nb_philo == 1)
@@ -36,6 +35,7 @@ void	eating(t_philo *philo)
 	else
 	{
 		pthread_mutex_lock(philo->l_fork);
+		// bool
 		lock_and_print(philo->id, "has taken a fork", philo->data);
 		pthread_mutex_lock(philo->r_fork);
 		lock_and_print(philo->id, "has taken a fork", philo->data);
@@ -52,31 +52,13 @@ void	eating(t_philo *philo)
 	pthread_mutex_unlock(philo->r_fork);
 }
 
-// void	eating(t_philo *philo)
-// {
-// 	pthread_mutex_lock(philo->l_fork);
-// 	lock_and_print(philo->id, "has taken a fork", philo->data);
-// 	pthread_mutex_lock(philo->r_fork);
-// 	lock_and_print(philo->id, "has taken a fork", philo->data);
-// 	lock_and_print(philo->id, "is eating", philo->data);
-// 	philo->nb_meal++;
-// 	philo->t_last_eat = get_time_ms();
-// 	if (philo->nb_meal >= philo->data->must_eat && philo->data->must_eat != -1)
-// 	{
-// 		pthread_mutex_lock(&philo->mtx->death);
-// 		philo->finish = true;
-// 		pthread_mutex_unlock(&philo->mtx->death);
-// 	}
-// 	ft_usleep(philo->data->t_eat * 1000);
-// 	pthread_mutex_unlock(philo->l_fork);
-// 	pthread_mutex_unlock(philo->r_fork);
-// }
-
 void	*routine(void *args)
 {
 	t_philo *philo;
 
 	philo = (t_philo *)args;
+	pthread_mutex_lock(&philo->mtx->start);
+	pthread_mutex_unlock(&philo->mtx->start);
 	if (philo->id % 2 == 0)
 	{
 		lock_and_print(philo->id, "is thinking", philo->data);
@@ -84,14 +66,15 @@ void	*routine(void *args)
 	}
 	while (1)
 	{
+		// if (eating)
+			// return ();
 		if (check_philo_died(philo))
 			return (NULL);
 		eating(philo);
 		if (check_philo_died(philo))
 			return (NULL);
 		lock_and_print(philo->id, "is sleeping", philo->data);
-		ft_usleep(philo->data->t_sleep * 1000);
-		if (check_philo_died(philo))
+		if (ft_usleep_sleep(philo->data->t_sleep * 1000, philo))
 			return (NULL);
 		lock_and_print(philo->id, "is thinking", philo->data);
 		if (philo->data->t_die - philo->data->t_eat > philo->data->t_eat + philo->data->t_sleep)
@@ -101,41 +84,40 @@ void	*routine(void *args)
 	return (NULL);
 }
 
-void	*monitoring(void *arg)
-{
-	t_data *data;
-	int i;
+// void	*monitoring(void *arg)
+// {
+// 	t_data *data;
+// 	int i;
 
-	data = arg;
-	while (1)
-	{
-		i = 0;
-		while (i < data->nb_philo)
-		{
-			if (check_death(&data->philo[i]))
-				return (NULL);
-			i++;
-		}
-		usleep(200);
-	}
-}
+// 	data = arg;
+// 	while (1)
+// 	{
+// 		i = 0;
+// 		while (i < data->nb_philo)
+// 		{
+// 			if (check_death(&data->philo[i]))
+// 				return (NULL);
+// 			i++;
+// 		}
+// 		usleep(200);
+// 	}
+// }
 
 int	launch_routine(t_data *data)
 {
-	pthread_t monitor;
 	int i;
 
 	i = 0;
 	pthread_mutex_lock(&data->mtx.start);
+	data->t_start = get_time_ms();
 	while (i < data->nb_philo)
 	{
 		data->philo[i].t_last_eat = data->t_start;
-		w_pthread_create(&data->philo[i].thread, routine, &data->philo[i],
-			data);
-			i++;
+		if (w_pthread_create(&data->philo[i].thread, routine, &data->philo[i],
+			data))
+			return (1);
+		i++;
 	}
-	data->t_start = get_time_ms();
-	pthread_create(&monitor, NULL, monitoring, data);
-	pthread_join(monitor, NULL);
+	pthread_mutex_unlock(&data->mtx.start);
 	return (0);
 }

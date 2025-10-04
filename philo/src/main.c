@@ -25,6 +25,7 @@ void	destroy_mutex(t_data *data)
 		pthread_mutex_destroy(&(data->mtx.fork[i]));
 		i++;
 	}
+	pthread_mutex_destroy(&(data->mtx.start));
 	pthread_mutex_destroy(&(data->mtx.death));
 	pthread_mutex_destroy(&(data->mtx.print));
 	pthread_mutex_destroy(&(data->mtx.eat));
@@ -66,9 +67,8 @@ int	main(int ac, char **av)
 	if (!arg_is_valid(ac, av))
 		return (1);
 	if (init_all(av, &data))
-		return (clean_exit(1, &data));
-	launch_routine(&data);
-	join_threads(&data);
-	destroy_mutex(&data);
-	return (NO_ERROR);
+		return (1);
+	if (launch_routine(&data))
+		return (1);
+	return (clean_exit(0, &data));
 }
